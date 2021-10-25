@@ -33,7 +33,7 @@ jobs:
       - docker_login
       - run:
           name: "Build << parameters.service_name >>"
-          command: "make -c << parameters.service_name >> build"
+          command: "make -C << parameters.service_name >> build"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
