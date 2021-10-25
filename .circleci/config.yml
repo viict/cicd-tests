@@ -40,8 +40,10 @@ jobs:
 workflows:
   build:
     jobs:
-      - build-api:
+      - build:
+          name: "Build API"
           service_name: api
 
-      - build-frontend:
+      - build:
+          name: "Build Frontend"
           service_name: frontend
