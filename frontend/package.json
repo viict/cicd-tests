@@ -1,0 +1,16 @@
+{
+  "name": "@viict/cicd-tests-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend test",
+  "main": "",
+  "scripts": {
+    "test": "echo 'Frontend Tested!' && exit 0"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "resolutions": {
+  }
+}

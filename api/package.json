@@ -1,0 +1,16 @@
+{
+  "name": "@viict/cicd-tests-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API test",
+  "main": "",
+  "scripts": {
+    "test": "echo 'API Tested!' && exit 0"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "resolutions": {
+  }
+}
