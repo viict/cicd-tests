@@ -9,14 +9,15 @@ PORTS = -p 3000:3000
 ENV = \
   -e NODE_ENV=development
 
-.PHONY: build push test
-
 build:
 	docker build \
   --cache-from $(NS)/$(REPO):$(CONTAINER)-$(VERSION) \
   --cache-from $(NS)/$(REPO):$(CONTAINER)-latest \
   --tag $(NS)/$(REPO):$(CONTAINER)-$(VERSION) \
   .
+
+save:
+	docker save $(NS)/$(REPO):$(CONTAINER)-$(VERSION) | gzip > $(CONTAINER).tar.gz
 
 push:
 	docker push $(NS)/$(REPO):$(CONTAINER)-$(VERSION)

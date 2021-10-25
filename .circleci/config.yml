@@ -8,6 +8,7 @@ commands:
           name: Login to Docker Hub
           command: |
             echo "$DOCKERHUB_TOKEN" | docker login --username viict --password-stdin
+
   build:
     description: "Run build command from Makefile for a service"
     parameters:
@@ -16,37 +17,98 @@ commands:
     steps:
       - run:
           name: "Build << parameters.service_name >>"
-          command: "make -c << parameters.service_name >> build"
+          command: |
+            make -C << parameters.service_name >> build
+            make -C << parameters.service_name >> save
+      - persist_to_workspace:
+          root: ~/ediphi
+          paths:
+            - ./
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-jobs:
-  build:
+  test:
+    description: "Run test command from Makefile for a service"
     parameters:
       service_name:
         type: string
+      stage:
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/ediphi
+      - run:
+          name: "Test << parameters.service_name >>"
+          command: |
+            STAGE="<< parameters.stage >>" make -C << parameters.service_name >> test
+
+  push:
+    description: "Run push command from Makefile for a service"
+    parameters:
+      service_name:
+        type: string
+      stage:
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/ediphi
+      - run:
+          name: "Push << parameters.service_name >>"
+          command: |
+            STAGE="<< parameters.stage >>" make -C << parameters.service_name >> push
+
+  deploy:
+    description: "Run deploy command from Makefile for a service"
+    parameters:
+      service_name:
+        type: string
+      stage:
+        type: string
+    steps:
+      - run:
+          name: "Deploy << parameters.service_name >> to << parameters.stage >>"
+          command: |
+            STAGE="<< parameters.stage >>" make -C << parameters.service_name >> deploy
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - ./
+
+jobs:
+  build:
     docker:
       - image: cimg/base:stable
+    working_directory: ~/ediphi
     steps:
       - checkout:
-          path: ~/project
+          path: ~/ediphi
       - setup_remote_docker:
           version: 19.03.13
           # docker_layer_caching: true
       - docker_login
-      - run:
-          name: "Build << parameters.service_name >>"
-          command: "make -C << parameters.service_name >> build"
-
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
-workflows:
-  build:
-    jobs:
       - build:
-          name: "Build API"
           service_name: api
-
       - build:
-          name: "Build Frontend"
           service_name: frontend
+
+  test:
+    docker:
+      - image: cimg/base:stable
+    working_directory: ~/ediphi
+    steps:
+      - setup_remote_docker:
+          version: 19.03.13
+          # docker_layer_caching: true
+      - docker_login
+      - test:
+          service_name: api
+          stage: development
+      - test:
+          service_name: frontend
+          stage: development
+
+workflows:
+  build-test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
