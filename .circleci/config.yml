@@ -135,4 +135,5 @@ workflows:
             - checkout
       - test:
           requires:
-            - build
+            - "Build api"
+            - "Build frontend"
