@@ -15,8 +15,6 @@ commands:
       service_name:
         type: string
     steps:
-      - attach_workspace:
-          at: ~/ediphi
       - run:
           name: "Build << parameters.service_name >>"
           command: |
@@ -25,7 +23,7 @@ commands:
       - persist_to_workspace:
           root: ~/ediphi
           paths:
-            - ./*.tgz
+            - ./<< parameters.service_name >>/*.tgz
 
   test:
     description: "Run test command from Makefile for a service"
