@@ -30,18 +30,27 @@ BUILDS=`echo $JSON | jq -r '.builds|to_entries|map(select( (.value) != "FALSE" )
           service_name: \(.key)
           requires:
             - checkout")|.[]'`
+TESTS=`echo $JSON | jq -r '.builds|to_entries|map(select( (.value) != "FALSE" ))|map("      - test:
+          service_name: \(.key)
+          stage: '$STAGE''`
 TESTS_REQUIRED=`echo $JSON | jq -r '.builds|to_entries|map(select( (.value) != "FALSE" ))|map("            - \"Build \(.key)\"")|.[]'`
 
 echo $JSON | jq
 
 TEMPLATE=`cat ./.circleci/build_config.template.yml`
-
 echo "$TEMPLATE" > ./.circleci/build_config.yml
+echo "
+workflows:
+  build-test:
+    jobs:
+      - checkout
+" >> ./.circleci/build_config.yml
 echo "$BUILDS" >> ./.circleci/build_config.yml
 echo "      - test:
           requires:
 " >> ./.circleci/build_config.yml
 echo "$TESTS_REQUIRED" >> ./.circleci/build_config.yml
+
 
 # - "Build api"
 # - "Build api/inner"
