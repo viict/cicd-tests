@@ -20,14 +20,14 @@ TESTS_REQUIRED=`echo $JSON | jq -r '.jobs|to_entries|map(select( (.value) != "FA
 
 echo $JSON | jq
 
-TEMPLATE=`cat build_config.template.yml`
+TEMPLATE=`cat ./.circleci/build_config.template.yml`
 
-echo "$TEMPLATE" > build_config.yml
-echo "$BUILDS" >> build_config.yml
+echo "$TEMPLATE" > ./.circleci/build_config.yml
+echo "$BUILDS" >> ./.circleci/build_config.yml
 echo "      - test:
           requires:
-" >> build_config.yml
-echo "$TESTS_REQUIRED" >> build_config.yml
+" >> ./.circleci/build_config.yml
+echo "$TESTS_REQUIRED" >> ./.circleci/build_config.yml
 
 # - "Build api"
 # - "Build api/inner"
