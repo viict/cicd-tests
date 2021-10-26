@@ -81,7 +81,8 @@ jobs:
       - image: cimg/base:stable
     working_directory: ~/ediphi
     steps:
-      - checkout
+      - checkout:
+          path: ~/ediphi
       - persist_to_workspace:
           root: ~/ediphi
           paths:
@@ -121,7 +122,9 @@ workflows:
   build-test:
     jobs:
       - checkout
-      - build
+      - build:
+          requires:
+            - checkout
       - test:
           requires:
             - build
