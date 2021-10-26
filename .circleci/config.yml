@@ -79,6 +79,11 @@ jobs:
       - image: cimg/base:stable
     working_directory: ~/ediphi
     steps:
+      - checkout:
+          path: ~/ediphi
+      - setup_remote_docker:
+          version: 19.03.13
+          # docker_layer_caching: true
       - docker_login
       - build:
           service_name: api
@@ -104,11 +109,6 @@ jobs:
 workflows:
   build-test:
     jobs:
-      - setup_remote_docker:
-          version: 19.03.13
-          # docker_layer_caching: true
-      - checkout:
-          path: ~/ediphi
       - build
       - test:
           requires:
