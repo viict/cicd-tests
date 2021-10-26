@@ -1,145 +1,23 @@
 version: 2.1
 
-commands:
-  docker_login:
-    description: "Login into Docker Hub service for pulls and pushes"
-    steps:
-      - run:
-          name: Login to Docker Hub
-          command: |
-            echo "$DOCKERHUB_TOKEN" | docker login --username viict --password-stdin
+setup: true
 
-  build:
-    description: "Run build command from Makefile for a service"
-    parameters:
-      service_name:
-        type: string
-    steps:
-      - attach_workspace:
-          at: ~/ediphi
-      - run:
-          name: "Build << parameters.service_name >>"
-          command: |
-            make -C << parameters.service_name >> build
-            make -C << parameters.service_name >> save
-      - persist_to_workspace:
-          root: ~/ediphi
-          paths:
-            - ./<< parameters.service_name >>/*.tgz
-
-  test:
-    description: "Run test command from Makefile for a service"
-    parameters:
-      service_name:
-        type: string
-      stage:
-        type: string
-    steps:
-      - run:
-          name: "Test << parameters.service_name >>"
-          command: |
-            make -C << parameters.service_name >> restore
-            STAGE="<< parameters.stage >>" make -C << parameters.service_name >> test
-
-  push:
-    description: "Run push command from Makefile for a service"
-    parameters:
-      service_name:
-        type: string
-      stage:
-        type: string
-    steps:
-      - attach_workspace:
-          at: ~/ediphi
-      - run:
-          name: "Push << parameters.service_name >>"
-          command: |
-            STAGE="<< parameters.stage >>" make -C << parameters.service_name >> push
-
-  deploy:
-    description: "Run deploy command from Makefile for a service"
-    parameters:
-      service_name:
-        type: string
-      stage:
-        type: string
-    steps:
-      - run:
-          name: "Deploy << parameters.service_name >> to << parameters.stage >>"
-          command: |
-            STAGE="<< parameters.stage >>" make -C << parameters.service_name >> deploy
-      - persist_to_workspace:
-          root: ./
-          paths:
-            - ./
+orbs:
+  continuation: circleci/continuation@0.2.0
 
 jobs:
-  checkout:
-    docker:
-      - image: cimg/base:stable
-    working_directory: ~/ediphi
+  fast_track:
+    executor: continuation/default
     steps:
-      - checkout:
-          path: ~/ediphi
-      - persist_to_workspace:
-          root: ~/ediphi
-          paths:
-            - ./
-
-  build:
-    parameters:
-      service_name:
-        type: string
-    docker:
-      - image: cimg/base:stable
-    working_directory: ~/ediphi
-    steps:
-      - setup_remote_docker:
-          version: 19.03.13
-          # docker_layer_caching: true
-      - docker_login
-      - build:
-          service_name: << parameters.service_name >>
-
-  test:
-    docker:
-      - image: cimg/base:stable
-    working_directory: ~/ediphi
-    steps:
-      - setup_remote_docker:
-          version: 19.03.13
-          # docker_layer_caching: true
-      - docker_login
-      - attach_workspace:
-          at: ~/ediphi
-      - test:
-          service_name: api
-          stage: development
-      - test:
-          service_name: frontend
-          stage: development
+      - checkout
+      - run:
+          name: Fast Track Services
+          command: |
+            ./circleci/process.sh
+      - continuation/continue:
+          configuration_path: .circleci/build_config.template.yml # use newly generated config to continue
 
 workflows:
-  build-test:
+  init:
     jobs:
-      - checkout
-      - build:
-          name: "Build api"
-          service_name: api
-          requires:
-            - checkout
-      - build:
-          name: "Build api/inner"
-          service_name: api/inner
-          requires:
-            - checkout
-      - build:
-          name: "Build frontend"
-          service_name: frontend
-          requires:
-            - checkout
-      - test:
-          requires:
-            - "Build api"
-            - "Build api/inner"
-            - "Build frontend"
+      - fast_track
