@@ -3,15 +3,11 @@ pwd
 SERVICES=`find ./ -name Makefile ! -path '*/node_modules/*'`
 
 STAGE="test"
+DEPLOY="false"
 case $CIRCLE_BRANCH in
-    development)
+    development|staging|master)
         STAGE=$CIRCLE_BRANCH
-    ;;
-    staging)
-        STAGE=$CIRCLE_BRANCH
-    ;;
-    master)
-        STAGE=$CIRCLE_BRANCH
+        DEPLOY="true"
     ;;
 esac
 
