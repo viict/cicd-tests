@@ -13,7 +13,7 @@ jobs:
       - run:
           name: Fast Track Services
           command: |
-            ./circleci/process.sh
+            ./.circleci/process.sh
       - continuation/continue:
           configuration_path: .circleci/build_config.template.yml # use newly generated config to continue
 
