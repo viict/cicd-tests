@@ -89,6 +89,9 @@ jobs:
             - ./
 
   build:
+    parameters:
+      service_name:
+        type: string
     docker:
       - image: cimg/base:stable
     working_directory: ~/ediphi
@@ -98,9 +101,7 @@ jobs:
           # docker_layer_caching: true
       - docker_login
       - build:
-          service_name: api
-      - build:
-          service_name: frontend
+          service_name: << parameters.service_name >>
 
   test:
     docker:
@@ -123,6 +124,11 @@ workflows:
     jobs:
       - checkout
       - build:
+          service_name: api
+          requires:
+            - checkout
+      - build:
+          service_name: frontend
           requires:
             - checkout
       - test:
