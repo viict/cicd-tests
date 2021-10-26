@@ -29,6 +29,6 @@ test:
 	docker run -it --rm $(NS)/$(REPO):$(CONTAINER)-$(VERSION) yarn test
 
 fast_track:
-	echo "FALSE"
+	echo "TRUE"
 
 default: build
