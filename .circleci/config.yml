@@ -23,7 +23,7 @@ commands:
       - persist_to_workspace:
           root: ~/ediphi
           paths:
-            - ./
+            - ./*.tgz
 
   test:
     description: "Run test command from Makefile for a service"
@@ -74,13 +74,21 @@ commands:
             - ./
 
 jobs:
+  checkout:
+    docker:
+      - image: cimg/base:stable
+    working_directory: ~/ediphi
+    steps:
+      - attach_workspace:
+          at: ~/ediphi
+      - checkout:
+          path: ~/ediphi
+
   build:
     docker:
       - image: cimg/base:stable
     working_directory: ~/ediphi
     steps:
-      - checkout:
-          path: ~/ediphi
       - setup_remote_docker:
           version: 19.03.13
           # docker_layer_caching: true
@@ -109,6 +117,7 @@ jobs:
 workflows:
   build-test:
     jobs:
+      - checkout
       - build
       - test:
           requires:
