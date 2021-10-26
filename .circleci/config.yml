@@ -129,6 +129,11 @@ workflows:
           requires:
             - checkout
       - build:
+          name: "Build api/inner"
+          service_name: api/inner
+          requires:
+            - checkout
+      - build:
           name: "Build frontend"
           service_name: frontend
           requires:
@@ -136,4 +141,5 @@ workflows:
       - test:
           requires:
             - "Build api"
+            - "Build api/inner"
             - "Build frontend"
