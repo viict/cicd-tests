@@ -79,10 +79,12 @@ jobs:
       - image: cimg/base:stable
     working_directory: ~/ediphi
     steps:
-      - attach_workspace:
-          at: ~/ediphi
       - checkout:
           path: ~/ediphi
+      - persist_to_workspace:
+          root: ~/ediphi
+          paths:
+            - ./
 
   build:
     docker:
