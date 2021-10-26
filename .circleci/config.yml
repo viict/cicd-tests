@@ -78,6 +78,7 @@ jobs:
     docker:
       - image: cimg/base:stable
     working_directory: ~/ediphi
+    parallelism: 6
     steps:
       - checkout:
           path: ~/ediphi
