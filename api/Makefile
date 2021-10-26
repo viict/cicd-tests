@@ -17,13 +17,16 @@ build:
   .
 
 save:
-	docker save $(NS)/$(REPO):$(CONTAINER)-$(VERSION) | gzip > $(CONTAINER).tar.gz
+	docker save $(NS)/$(REPO):$(CONTAINER)-$(VERSION) | gzip > $(CONTAINER).tgz
+
+restore:
+	docker load < $(CONTAINER).tgz
 
 push:
 	docker push $(NS)/$(REPO):$(CONTAINER)-$(VERSION)
 
 test:
-	docker run -itd --rm $(NS)/$(REPO):$(CONTAINER)-$(VERSION) yarn test
+	docker run -it --rm $(NS)/$(REPO):$(CONTAINER)-$(VERSION) yarn test
 
 fast_track:
 	../docker/fast_track $(NS)/$(REPO) $(CONTAINER)-$(VERSION)

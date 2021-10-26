@@ -38,6 +38,7 @@ commands:
       - run:
           name: "Test << parameters.service_name >>"
           command: |
+            make -C << parameters.service_name >> restore
             STAGE="<< parameters.stage >>" make -C << parameters.service_name >> test
 
   push:
