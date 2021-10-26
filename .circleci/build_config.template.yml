@@ -120,7 +120,7 @@ jobs:
           stage: development
 
 workflows:
-  build-test:
+  Ediphi:
     jobs:
       - checkout
       - build:
