@@ -15,7 +15,7 @@ jobs:
           command: |
             bash ./.circleci/process.sh
       - continuation/continue:
-          configuration_path: .circleci/build_config.template.yml # use newly generated config to continue
+          configuration_path: .circleci/build_config.yml # use newly generated config to continue
 
 workflows:
   init:

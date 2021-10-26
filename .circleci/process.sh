@@ -11,4 +11,39 @@ for SERVICE in $SERVICES; do
     JSON=`jq --arg service ${SERVICE_PATH} --arg value ${FASTTRACK} '. | .jobs[$service]=$value' <<< $JSON`
 done
 
-echo $JSON
+BUILDS=`echo $JSON | jq -r '.jobs|to_entries|map(select( (.value) != "FALSE" ))|map("      - build:
+          name: \"Build \(.key)\"
+          service_name: \(.key)
+          requires:
+            - checkout")|.[]'`
+TESTS_REQUIRED=`echo $JSON | jq -r '.jobs|to_entries|map(select( (.value) != "FALSE" ))|map("            - \"Build \(.key)\"")|.[]'`
+
+echo $JSON | jq
+
+TEMPLATE=`cat build_config.template.yml`
+
+echo "$TEMPLATE" > build_config.yml
+echo "$BUILDS" >> build_config.yml
+echo "      - test:
+          requires:
+" >> build_config.yml
+echo "$TESTS_REQUIRED" >> build_config.yml
+
+# - "Build api"
+# - "Build api/inner"
+# - "Build frontend"
+# - build:
+#     name: "Build api"
+#     service_name: api
+#     requires:
+#     - checkout
+# - build:
+#     name: "Build api/inner"
+#     service_name: api/inner
+#     requires:
+#     - checkout
+# - build:
+#     name: "Build frontend"
+#     service_name: frontend
+#     requires:
+#     - checkout
