@@ -124,10 +124,12 @@ workflows:
     jobs:
       - checkout
       - build:
+          name: "Build api"
           service_name: api
           requires:
             - checkout
       - build:
+          name: "Build frontend"
           service_name: frontend
           requires:
             - checkout
