@@ -112,14 +112,3 @@ jobs:
       - docker_login
       - attach_workspace:
           at: ~/ediphi
-      - test:
-          service_name: api
-          stage: development
-      - test:
-          service_name: frontend
-          stage: development
-
-workflows:
-  build-test:
-    jobs:
-      - checkout
