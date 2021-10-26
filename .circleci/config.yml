@@ -35,8 +35,6 @@ commands:
       stage:
         type: string
     steps:
-      - attach_workspace:
-          at: ~/ediphi
       - run:
           name: "Test << parameters.service_name >>"
           command: |
@@ -88,6 +86,12 @@ jobs:
           paths:
             - ./
 
+  workspace_setup:
+    working_directory: ~/ediphi
+    steps:
+      - attach_workspace:
+          at: ~/ediphi
+
   build:
     parameters:
       service_name:
@@ -111,6 +115,7 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
           # docker_layer_caching: true
+      - workspace_setup
       - docker_login
       - test:
           service_name: api
